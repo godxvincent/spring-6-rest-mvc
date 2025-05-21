@@ -30,7 +30,7 @@ public class CustomerController {
     @RequestMapping(value = "{customerId}", method = RequestMethod.GET)
     public Customer getcustomerById(@PathVariable("customerId") UUID customerId){
 
-        log.debug("Get Customer by Id - in controller");
+        log.debug("Get Customer by Id - in controlle - test");
 
         return customerService.getCustomerById(customerId);
     }

@@ -1,0 +1,12 @@
+GET http://localhost:8080/api/v1/beer HTTP/1.1
+
+###
+GET http://localhost:8080/api/v1/beer/200a5ee7-5b27-4f35-805c-db32b0c047e1 HTTP/1.1
+
+
+###  
+GET http://localhost:8080/api/v1/customer HTTP/1.1
+
+
+### 
+GET http://localhost:8080/api/v1/customer/e22ad0bb-9649-40a6-8ae5-a11dc5cb1e14  HTTP/1.1
