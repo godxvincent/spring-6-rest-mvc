@@ -8,4 +8,5 @@ import guru.springframework.spring6restmvc.model.Beer;
 public interface BeerService {
     List<Beer> listBeers();
     Beer getBeerById(UUID id);
+    Beer saveNewBeer(Beer beer);
 }

@@ -27,6 +27,7 @@ public class BeerServiceImpl implements BeerService {
 
         Beer beer1 = Beer.builder()
                 .id(UUID.randomUUID())
+                .version(1)
                 .beerName("Galaxy Cat")
                 .beerStyle(BeerStyle.PALE_ALE)
                 .upc("12356")
@@ -37,6 +38,7 @@ public class BeerServiceImpl implements BeerService {
                 .build();
         Beer beer2 = Beer.builder()
                 .id(UUID.randomUUID())
+                .version(1)
                 .beerName("Modelo")
                 .beerStyle(BeerStyle.LAGER)
                 .upc("498724")
@@ -47,6 +49,7 @@ public class BeerServiceImpl implements BeerService {
                 .build();
         Beer beer3 = Beer.builder()
                 .id(UUID.randomUUID())
+                .version(1)
                 .beerName("Heineken")
                 .beerStyle(BeerStyle.STOUT)
                 .upc("987123")
@@ -73,6 +76,24 @@ public class BeerServiceImpl implements BeerService {
         log.debug("Get Beer by Id - in service. Id: " + id.toString());
         return beerMap.get(id);
 
+    }
+
+    @Override
+    public Beer saveNewBeer(Beer beer) {
+        // TODO Auto-generated method stub
+        Beer savedBeer = Beer.builder()
+                .id(UUID.randomUUID())
+                .version(beer.getVersion())
+                .beerName(beer.getBeerName())
+                .beerStyle(beer.getBeerStyle())
+                .upc(beer.getUpc())
+                .price(beer.getPrice())
+                .quantityOnHand(beer.getQuantityOnHand())
+                .createDateTime(LocalDateTime.now())
+                .updateDateTime(LocalDateTime.now())
+                .build();
+        beerMap.put(savedBeer.getId(), savedBeer);
+        return savedBeer;
     }
 
 
