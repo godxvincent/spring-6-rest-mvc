@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.UUID;
 
 import org.springframework.stereotype.Service;
+import org.springframework.util.StringUtils;
 
 import guru.springframework.spring6restmvc.model.Customer;
 
@@ -53,6 +54,50 @@ public class CustomerServiceImpl implements CustomerService {
     @Override
     public Customer getCustomerById(UUID id) {
         return customersMap.get(id);
+    }
+
+
+    @Override
+    public Customer saveNewCustomer(Customer entity) {
+        // TODO Auto-generated method stub
+        Customer savedCustomer = Customer.builder()
+                            .id(UUID.randomUUID())
+                            .customerName(entity.getCustomerName())
+                            .version(entity.getVersion())
+                            .createdDate(LocalDateTime.now())
+                            .lastModifiedDate(LocalDateTime.now())
+                            .build();
+        customersMap.put(savedCustomer.getId(), savedCustomer); 
+        return savedCustomer;                        
+    }
+
+
+    @Override
+    public void updateExistingCustomer(UUID customerId, Customer customer) {
+        var existingCustomer = customersMap.get(customerId);
+        existingCustomer.setCustomerName(customer.getCustomerName());
+        existingCustomer.setLastModifiedDate(LocalDateTime.now());
+        customersMap.put(customerId, existingCustomer);
+    }
+
+
+    @Override
+    public void deleteCustomerById(UUID customerId) {
+        // TODO Auto-generated method stub
+        customersMap.remove(customerId);
+    }
+
+
+    @Override
+    public void patchExistingCustomer(UUID customerId, Customer customer) {
+        var existing = customersMap.get(customerId);
+        if(customer.getCustomerName() != null){
+            if (StringUtils.hasText(customer.getCustomerName())) {
+                existing.setCustomerName(customer.getCustomerName());
+            }
+            existing.setLastModifiedDate(LocalDateTime.now());
+            customersMap.put(customerId, existing);
+        }
     }
 
 }

@@ -9,4 +9,7 @@ public interface BeerService {
     List<Beer> listBeers();
     Beer getBeerById(UUID id);
     Beer saveNewBeer(Beer beer);
+    void updateExistingBeer(UUID id, Beer entity);
+    void deleteBeerById(UUID beerId);
+    void patchExistingBeer(UUID beerId, Beer beer);
 }

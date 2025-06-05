@@ -8,6 +8,7 @@ import java.util.List;
 import java.util.UUID;
 
 import org.springframework.stereotype.Service;
+import org.springframework.util.StringUtils;
 
 import guru.springframework.spring6restmvc.model.Beer;
 import guru.springframework.spring6restmvc.model.BeerStyle;
@@ -94,6 +95,49 @@ public class BeerServiceImpl implements BeerService {
                 .build();
         beerMap.put(savedBeer.getId(), savedBeer);
         return savedBeer;
+    }
+
+    @Override
+    public void updateExistingBeer(UUID id, Beer beer) {
+        Beer existing = beerMap.get(id);
+        existing.setBeerName(beer.getBeerName());
+        existing.setBeerStyle(beer.getBeerStyle());
+        existing.setPrice(beer.getPrice());
+        existing.setUpc(beer.getUpc());
+        existing.setUpdateDateTime(LocalDateTime.now());
+        existing.setQuantityOnHand(beer.getQuantityOnHand());
+        beerMap.put(existing.getId(), existing);
+    }
+
+    @Override
+    public void deleteBeerById(UUID beerId) {
+        beerMap.remove(beerId);
+
+        
+    }
+
+    @Override
+    public void patchExistingBeer(UUID beerId, Beer beer) {
+        var existing = beerMap.get(beerId);
+        if (existing != null) {
+            if (StringUtils.hasText(beer.getBeerName())) {
+                existing.setBeerName(beer.getBeerName());
+            }
+            if (beer.getBeerStyle() != null) {
+                existing.setBeerStyle(beer.getBeerStyle());
+            }
+            if (beer.getPrice() != null) {
+                existing.setPrice(beer.getPrice());
+            } 
+            if (StringUtils.hasText(beer.getUpc())) {
+                existing.setUpc(beer.getUpc());
+            }
+            if (beer.getQuantityOnHand() != null) {
+                existing.setQuantityOnHand(beer.getQuantityOnHand());
+            }
+            existing.setUpdateDateTime(LocalDateTime.now());
+            beerMap.put(existing.getId(), existing);
+        }
     }
 
 

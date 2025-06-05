@@ -1,12 +1,38 @@
 GET http://localhost:8080/api/v1/beer HTTP/1.1
 
 ###
+PATCH http://localhost:8080/api/v1/beer/877f8a40-c7f2-40a8-9558-403adbffa78b HTTP/1.1 
+Accept: */*
+User-Agent: Thunder Client (https://www.thunderclient.com)
+content-type: application/json
+
+{
+    "price": 5
+}
+
+###
+DELETE http://localhost:8080/api/v1/beer/b05f6ada-b199-4437-b202-7d53ea390815 HTTP/1.1
+
+
+
+
+
+###
 GET http://localhost:8080/api/v1/beer/200a5ee7-5b27-4f35-805c-db32b0c047e1 HTTP/1.1
 
 
 ###  
 GET http://localhost:8080/api/v1/customer HTTP/1.1
 
+###
+PATCH  http://localhost:8080/api/v1/customer/6f8c686d-5cdc-46be-b97a-d9fa9128c7eb HTTP/1.1
+Accept: */*
+User-Agent: Thunder Client (https://www.thunderclient.com)
+content-type: application/json
+
+{
+    "customerName": "Ricardo Vargas"
+}
 
 ### 
 GET http://localhost:8080/api/v1/customer/e22ad0bb-9649-40a6-8ae5-a11dc5cb1e14  HTTP/1.1
@@ -27,3 +53,51 @@ content-type: application/json
     "quantityOnHand": 2000,
     "price": 15.75  
 }
+
+###
+POST http://localhost:8080/api/v1/customer
+Accept: */*
+User-Agent: Thunder Client (https://www.thunderclient.com)
+content-type: application/json
+
+{
+    "customerName": "Customer New - Other customer",
+    "version": 1
+}
+
+### 
+
+PUT http://localhost:8080/api/v1/beer/54c7b5ef-4b8a-424c-80db-24428b5cb945
+Accept: */*
+User-Agent: Thunder Client (https://www.thunderclient.com)
+content-type: application/json
+
+{
+    "beerName": "Heineken",
+    "upc": "1000",
+    "quantityOnHand": 700,
+    "beerStyle": "STOUT",
+    "price": 40
+}
+
+# "id": "2a1621e7-32af-4ffa-a067-c1830bd31179",
+# "version": 1,
+# "beerName": "Heineken",
+# "beerStyle": "STOUT",
+# "upc": "987123",
+# "quantityOnHand": 500,
+# "price": 8.3100000000000004973799150320701301097869873046875,
+# "createDateTime": "2025-05-26T09:18:15.745294",
+# "updateDateTime": "2025-05-26T09:18:15.745296"
+
+###
+PUT http://localhost:8080/api/v1/customer/49dc5223-afff-400f-a8b9-1ab800fbd45a
+Accept: */*
+User-Agent: Thunder Client (https://www.thunderclient.com)
+content-type: application/json
+
+{
+    "customerName" : "Ricardo Vargas"
+}
+
+# 2025-05-26T09:30:18.037186
