@@ -9,6 +9,8 @@ import org.springframework.http.MediaType;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+
 import guru.springframework.spring6restmvc.services.BeerService;
 import guru.springframework.spring6restmvc.services.BeerServiceImpl;
 
@@ -37,8 +39,26 @@ public class BeerControllerTest {
     @MockitoBean
     BeerService beerService;
 
+    // Podemos crear un object mapper a mano pero al hacerlo así dejamos que sprintboot injecte por nosotros su propio object mapper con
+    // las mismas configuraciones que usaria en el servidor real.
+    @Autowired
+    ObjectMapper objectMapper;
+
     // Incluimos aqui el servicio real ya que esta retornando data mock de cualquier forma
     BeerServiceImpl beerServiceImpl = new BeerServiceImpl();
+
+    @Test
+    void testCreateNewBeer() throws Exception {
+        //
+
+        var testBeer = beerServiceImpl.listBeers().get(0);
+
+        System.out.println(objectMapper.writeValueAsString(testBeer));
+
+        // given(beerService.saveNewBeer(testBeer)).willReturn(testBeer);
+
+    }
+
 
     @Test
     void listBeers() throws Exception {
