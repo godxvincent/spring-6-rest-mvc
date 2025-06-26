@@ -1,26 +1,44 @@
 package guru.springframework.spring6restmvc.controllers;
 
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.mockito.ArgumentCaptor;
+import org.mockito.Captor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
-// import org.springframework.boot.test.context.SpringBootTest;
-// import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 
+import guru.springframework.spring6restmvc.model.Beer;
 import guru.springframework.spring6restmvc.services.BeerService;
 import guru.springframework.spring6restmvc.services.BeerServiceImpl;
 
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.patch;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.header;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
-import static org.hamcrest.core.Is.is;
 
+import java.util.HashMap;
+import java.util.Map;
+import java.util.UUID;
+
+import static org.hamcrest.core.Is.is;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.BDDMockito.given;
+import static org.mockito.Mockito.verify;
+import static org.assertj.core.api.Assertions.assertThat;
+
+
 
 
 // @SpringBootTest inicializa el servidor por uno, pero aqui queremos probar como se inyectan/mock cosas con mockito.
@@ -45,18 +63,84 @@ public class BeerControllerTest {
     ObjectMapper objectMapper;
 
     // Incluimos aqui el servicio real ya que esta retornando data mock de cualquier forma
-    BeerServiceImpl beerServiceImpl = new BeerServiceImpl();
+    // BeerServiceImpl beerServiceImpl = new BeerServiceImpl();
+    BeerServiceImpl beerServiceImpl;
+
+    @Captor
+    ArgumentCaptor<UUID> uuidArgumentCaptor;
+    @Captor
+    ArgumentCaptor<Beer> beerArgumentCaptor;
+
+    @BeforeEach
+    void setUp() throws Exception {
+        beerServiceImpl = new BeerServiceImpl();
+
+    }
+
+    @Test
+    void testPatchBeer() throws Exception {
+        var testBeer = beerServiceImpl.listBeers().get(0);
+
+        Map<String, Object> beerMap = new HashMap<>();
+        beerMap.put("beerName", "New Name");
+
+
+        mockMvc.perform(patch(BeerController.BEER_PATH_ID, testBeer.getId())
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(beerMap))
+                .accept(MediaType.APPLICATION_JSON))
+            .andExpect(status().isNoContent());
+
+        verify(beerService).patchExistingBeer(uuidArgumentCaptor.capture(), beerArgumentCaptor.capture());
+
+        assertThat(testBeer.getId()).isEqualTo(uuidArgumentCaptor.getValue());
+        assertThat(beerMap.get("beerName")).isEqualTo(beerArgumentCaptor.getValue().getBeerName());
+        assertNull(beerArgumentCaptor.getValue().getPrice());
+
+    }
+
+    @Test
+    void testDeleteBeer() throws Exception {
+        var testBeer = beerServiceImpl.listBeers().get(0);
+        mockMvc.perform(delete(BeerController.BEER_PATH_ID,testBeer.getId())
+                    .accept(MediaType.APPLICATION_JSON))
+               .andExpect(status().isNoContent());
+        
+        
+        verify(beerService).deleteBeerById(uuidArgumentCaptor.capture());
+        assertThat(uuidArgumentCaptor.getValue()).isEqualTo(testBeer.getId());
+    }
+
+    @Test
+    void testUpdateBeer() throws Exception {
+        //
+        var testBeer = beerServiceImpl.listBeers().get(0);
+
+        mockMvc.perform(put(BeerController.BEER_PATH_ID,testBeer.getId())
+                    .contentType(MediaType.APPLICATION_JSON)
+                    .accept(MediaType.APPLICATION_JSON)
+                    .content(objectMapper.writeValueAsString(testBeer)))
+               .andExpect(status().isNoContent());
+
+        verify(beerService).updateExistingBeer(eq(testBeer.getId()), eq(testBeer));
+
+    }
 
     @Test
     void testCreateNewBeer() throws Exception {
         //
 
         var testBeer = beerServiceImpl.listBeers().get(0);
+        testBeer.setVersion(null);
+        testBeer.setId(null);
 
-        System.out.println(objectMapper.writeValueAsString(testBeer));
+        given(beerService.saveNewBeer(any(Beer.class))).willReturn(beerServiceImpl.listBeers().get(1));
 
-        // given(beerService.saveNewBeer(testBeer)).willReturn(testBeer);
-
+        mockMvc.perform(post(BeerController.BEER_PATH)
+                    .contentType(MediaType.APPLICATION_JSON)
+                    .content(objectMapper.writeValueAsString(testBeer)))
+               .andExpect(status().isCreated())
+               .andExpect(header().exists("Location"));
     }
 
 
@@ -66,7 +150,7 @@ public class BeerControllerTest {
         var testListOfBeers = beerServiceImpl.listBeers();
         given(beerService.listBeers()).willReturn(testListOfBeers);
 
-        mockMvc.perform(get("/api/v1/beer")
+        mockMvc.perform(get(BeerController.BEER_PATH)
                .accept(MediaType.APPLICATION_JSON))
                .andExpect(status().isOk())
                .andExpect(content().contentType(MediaType.APPLICATION_JSON))
@@ -77,14 +161,13 @@ public class BeerControllerTest {
 
     @Test
     void getBeerById() throws Exception {
-        // System.out.println("Beer Controller Test");
-        // System.out.println(beerController.getBeerById(UUID.randomUUID()));
+
         var testBeer = beerServiceImpl.listBeers().get(0);
 
         given(beerService.getBeerById(testBeer.getId())).willReturn(testBeer);
 
 
-        mockMvc.perform(get("/api/v1/beer/" + testBeer.getId())
+        mockMvc.perform(get(BeerController.BEER_PATH_ID , testBeer.getId())
                .accept(MediaType.APPLICATION_JSON))
                .andExpect(status().isOk())
                .andExpect(content().contentType(MediaType.APPLICATION_JSON))

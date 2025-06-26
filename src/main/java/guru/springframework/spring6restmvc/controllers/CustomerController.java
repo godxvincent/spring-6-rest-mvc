@@ -21,38 +21,46 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+
 
 
 
 @RestController
 @AllArgsConstructor
-@RequestMapping("/api/v1/customer")
 @Slf4j
 public class CustomerController {
 
+
+    public final static String CUSTOMER_PATH = "/api/v1/customer";
+    public final static String CUSTOMER_PATH_ID = CUSTOMER_PATH + "/{customerId}";
+
+
     private final CustomerService customerService;
 
-    @PatchMapping("{customerId}")
+    @PatchMapping(CUSTOMER_PATH_ID)
     public ResponseEntity patchExistingCustomer(@PathVariable("customerId") UUID customerId, @RequestBody Customer customer) {
 
         customerService.patchExistingCustomer(customerId, customer);
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
 
-    @DeleteMapping("{customerId}")
+    @DeleteMapping(CUSTOMER_PATH_ID)
     public ResponseEntity deleteMethodName(@PathVariable("customerId") UUID customerId) {
         customerService.deleteCustomerById(customerId);
         return new ResponseEntity(HttpStatus.NO_CONTENT);
     }
 
-    @PutMapping("{customerId}")
+    @PutMapping(CUSTOMER_PATH_ID)
     public ResponseEntity putMethodName(@PathVariable("customerId") UUID customerId, @RequestBody Customer customer) {
         //TODO: process PUT request
         
         customerService.updateExistingCustomer(customerId, customer);
         return new ResponseEntity(HttpStatus.NO_CONTENT);
     }
-    @PostMapping()
+    
+    @PostMapping(CUSTOMER_PATH)
     public ResponseEntity createCustomer(@RequestBody Customer entity) {
         
         Customer customer = customerService.saveNewCustomer(entity);
@@ -64,12 +72,12 @@ public class CustomerController {
     }
     
 
-    @RequestMapping(method = RequestMethod.GET)
+    @GetMapping(CUSTOMER_PATH)
     public List<Customer> listCustomers(){
         return customerService.listCustomers();
     }
 
-    @RequestMapping(value = "{customerId}", method = RequestMethod.GET)
+    @GetMapping(CUSTOMER_PATH_ID)
     public Customer getcustomerById(@PathVariable("customerId") UUID customerId){
 
         log.debug("Get Customer by Id - in controlle - test");
