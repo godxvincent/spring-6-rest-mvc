@@ -7,6 +7,7 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RestController;
@@ -82,4 +83,11 @@ public class BeerController {
 
         return beerService.getBeerById(beerId);
     }
+
+    // This is a first approach to handle the exceptions when it's required for an specific necessity
+    // We can implement the funtion exception handler or we can create a kind of base controller.
+    // @ExceptionHandler(NotFoundException.class)
+    // public ResponseEntity handleNotFoundException(){
+    //     return new ResponseEntity(HttpStatus.NOT_FOUND).notFound().build();
+    // }
 }
