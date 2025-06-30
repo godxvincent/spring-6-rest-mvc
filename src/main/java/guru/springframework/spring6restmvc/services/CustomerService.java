@@ -1,6 +1,7 @@
 package guru.springframework.spring6restmvc.services;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 
 import guru.springframework.spring6restmvc.model.Customer;
@@ -8,7 +9,7 @@ import guru.springframework.spring6restmvc.model.Customer;
 public interface CustomerService {
 
     List<Customer> listCustomers();
-    Customer getCustomerById(UUID id);
+    Optional<Customer> getCustomerById(UUID id);
     Customer saveNewCustomer(Customer entity);
     void updateExistingCustomer(UUID customerId, Customer customer);
     void deleteCustomerById(UUID customerId);

@@ -3,6 +3,7 @@ package guru.springframework.spring6restmvc.services;
 import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 
 import org.springframework.stereotype.Service;
@@ -52,8 +53,8 @@ public class CustomerServiceImpl implements CustomerService {
     }
 
     @Override
-    public Customer getCustomerById(UUID id) {
-        return customersMap.get(id);
+    public Optional<Customer> getCustomerById(UUID id) {
+        return Optional.of(customersMap.get(id));
     }
 
 
