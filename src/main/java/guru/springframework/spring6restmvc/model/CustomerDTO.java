@@ -8,7 +8,7 @@ import lombok.Data;
 
 @Data
 @Builder
-public class Customer {
+public class CustomerDTO {
 
     private UUID id;
     private String customerName;

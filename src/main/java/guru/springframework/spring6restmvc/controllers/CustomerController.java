@@ -9,12 +9,10 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
 
-import guru.springframework.spring6restmvc.model.Customer;
+import guru.springframework.spring6restmvc.model.CustomerDTO;
 import guru.springframework.spring6restmvc.services.CustomerService;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -22,9 +20,6 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-
-
 
 
 @RestController
@@ -40,7 +35,7 @@ public class CustomerController {
     private final CustomerService customerService;
 
     @PatchMapping(CUSTOMER_PATH_ID)
-    public ResponseEntity patchExistingCustomer(@PathVariable("customerId") UUID customerId, @RequestBody Customer customer) {
+    public ResponseEntity patchExistingCustomer(@PathVariable("customerId") UUID customerId, @RequestBody CustomerDTO customer) {
 
         customerService.patchExistingCustomer(customerId, customer);
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
@@ -53,7 +48,7 @@ public class CustomerController {
     }
 
     @PutMapping(CUSTOMER_PATH_ID)
-    public ResponseEntity putMethodName(@PathVariable("customerId") UUID customerId, @RequestBody Customer customer) {
+    public ResponseEntity putMethodName(@PathVariable("customerId") UUID customerId, @RequestBody CustomerDTO customer) {
         //TODO: process PUT request
         
         customerService.updateExistingCustomer(customerId, customer);
@@ -61,9 +56,9 @@ public class CustomerController {
     }
     
     @PostMapping(CUSTOMER_PATH)
-    public ResponseEntity createCustomer(@RequestBody Customer entity) {
+    public ResponseEntity createCustomer(@RequestBody CustomerDTO entity) {
         
-        Customer customer = customerService.saveNewCustomer(entity);
+        CustomerDTO customer = customerService.saveNewCustomer(entity);
         
         HttpHeaders headers = new HttpHeaders();
         headers.add("Location", "/api/v1/customer/" + customer.getId().toString());
@@ -73,12 +68,12 @@ public class CustomerController {
     
 
     @GetMapping(CUSTOMER_PATH)
-    public List<Customer> listCustomers(){
+    public List<CustomerDTO> listCustomers(){
         return customerService.listCustomers();
     }
 
     @GetMapping(CUSTOMER_PATH_ID)
-    public Customer getcustomerById(@PathVariable("customerId") UUID customerId){
+    public CustomerDTO getcustomerById(@PathVariable("customerId") UUID customerId){
 
         log.debug("Get Customer by Id - in controlle - test");
 
