@@ -60,3 +60,13 @@ Got a question about your Spring Framework 6 course? [Checkout these FAQs!](http
 * Follow Spring Framework Guru on [Twitter](https://twitter.com/spring_guru)
 * Connect with John Thompson on [LinkedIn](http://www.linkedin.com/in/springguru)
 
+
+
+## Additional notes and useful links
+
+# URL for MapStruct documentation
+
+* [mapstruct](https://mapstruct.org/documentation/reference-guide/)
+  
+  * [configuration options](https://mapstruct.org/documentation/stable/reference/html/#configuration-options)
+  * [Retrieving mappers](https://mapstruct.org/documentation/stable/reference/html/#retrieving-mapper)
