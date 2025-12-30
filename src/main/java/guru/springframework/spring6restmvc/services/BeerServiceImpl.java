@@ -10,8 +10,6 @@ import java.util.UUID;
 
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
-
-import guru.springframework.spring6restmvc.controllers.NotFoundException;
 import guru.springframework.spring6restmvc.model.BeerDTO;
 import guru.springframework.spring6restmvc.model.BeerStyle;
 import lombok.extern.slf4j.Slf4j;
