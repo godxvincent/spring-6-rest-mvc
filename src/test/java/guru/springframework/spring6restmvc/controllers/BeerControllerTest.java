@@ -59,7 +59,7 @@ public class BeerControllerTest {
     @MockitoBean
     BeerService beerService;
 
-    // Podemos crear un object mapper a mano pero al hacerlo así dejamos que sprintboot injecte por nosotros su propio object mapper con
+    // Podemos crear un object mapper a mano pero al hacerlo así dejamos que sprintboot inyecte por nosotros su propio object mapper con
     // las mismas configuraciones que usaria en el servidor real.
     @Autowired
     ObjectMapper objectMapper;

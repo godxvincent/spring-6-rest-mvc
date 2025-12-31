@@ -13,18 +13,20 @@ import guru.springframework.spring6restmvc.entities.Customer;
 import guru.springframework.spring6restmvc.model.BeerStyle;
 import guru.springframework.spring6restmvc.repositories.BeerRepository;
 import guru.springframework.spring6restmvc.repositories.CustomerRepository;
+import lombok.RequiredArgsConstructor;
 
 @Component
+@RequiredArgsConstructor
 public class BootstrapData implements CommandLineRunner {
 
     private final BeerRepository beerRepository;
     private final CustomerRepository customerRepository;
 
-    public BootstrapData(BeerRepository beerRepository, CustomerRepository customerRepository) {
-    // public BootstrapData(BeerRepository beerRepository) {
-        this.beerRepository = beerRepository;
-        this.customerRepository = customerRepository;
-    }
+    // public BootstrapData(BeerRepository beerRepository, CustomerRepository customerRepository) {
+    // // public BootstrapData(BeerRepository beerRepository) {
+    //     this.beerRepository = beerRepository;
+    //     this.customerRepository = customerRepository;
+    // }
 
 
     @Override
@@ -81,22 +83,16 @@ public class BootstrapData implements CommandLineRunner {
 
     public void loadCustomerObjects() {
         Customer customer1 = Customer.builder()
-                            .id(UUID.randomUUID())
                             .customerName("Customer 1")
-                            .version(1234)
                             .createdDate(LocalDateTime.now())
                             .lastModifiedDate(LocalDateTime.now())
                             .build();
         Customer customer2 = Customer.builder()
-                            .id(UUID.randomUUID())
                             .customerName("Customer 2")
-                            .version(3456)
                             .createdDate(LocalDateTime.now())
                             .lastModifiedDate(LocalDateTime.now())
                             .build();
         Customer customer3 = Customer.builder()
-                            .id(UUID.randomUUID())
-                            .version(9813)
                             .customerName("Customer 3")
                             .createdDate(LocalDateTime.now())
                             .lastModifiedDate(LocalDateTime.now())
