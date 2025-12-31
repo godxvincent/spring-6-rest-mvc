@@ -49,7 +49,6 @@ public class CustomerController {
 
     @PutMapping(CUSTOMER_PATH_ID)
     public ResponseEntity putMethodName(@PathVariable("customerId") UUID customerId, @RequestBody CustomerDTO customer) {
-        //TODO: process PUT request
         
         customerService.updateExistingCustomer(customerId, customer);
         return new ResponseEntity(HttpStatus.NO_CONTENT);

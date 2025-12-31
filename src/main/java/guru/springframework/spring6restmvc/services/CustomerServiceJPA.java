@@ -23,14 +23,12 @@ public class CustomerServiceJPA implements CustomerService{
 
     @Override
     public List<CustomerDTO> listCustomers() {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'listCustomers'");
+        return this.customerRepository.findAll().stream().map(customerMapper::customerToCustomerDTO).toList();
     }
 
     @Override
     public Optional<CustomerDTO> getCustomerById(UUID id) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'getCustomerById'");
+        return Optional.ofNullable(this.customerMapper.customerToCustomerDTO(this.customerRepository.findById(id).orElse(null)));
     }
 
     @Override
