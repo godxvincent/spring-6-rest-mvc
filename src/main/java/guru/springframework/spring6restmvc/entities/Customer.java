@@ -31,6 +31,6 @@ public class Customer {
     @Version
     private Integer version;
     private String customerName;
-    private LocalDateTime createdDate;
-    private LocalDateTime lastModifiedDate;
+    private LocalDateTime createDateTime;
+    private LocalDateTime updateDateTime;
 }

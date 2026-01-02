@@ -123,12 +123,7 @@ public class BeerControllerIT {
         assertThat(totalBeers).isEqualTo(0);
     }
 
-    @Test
-    @Rollback
-    @Transactional
-    void testPatchBeer() {
-       
-    }
+
 
     @Test
     void testPutBeerByIdNotFound() {
@@ -160,4 +155,36 @@ public class BeerControllerIT {
         // assertThat(beer.getVersion()).isNotEqualTo(updateBeer.getVersion());
         
     }
+
+
+    @Test
+    void testPatchBeerByIdNotFound() {
+        assertThrows(NotFoundException.class, ()-> {
+            beerController.patchBeer(UUID.randomUUID(), BeerDTO.builder().build());
+        });
+    }
+
+    @Transactional
+    @Rollback
+    @Test
+    void testPatchBeer() {
+        Beer beer = this.beerRepository.findAll().get(0);
+        BeerDTO beerDTO = this.beerMapper.beerToBeerDTO(beer);
+        beerDTO.setId(null);
+        beerDTO.setVersion(null);
+
+        final String beerName = "Ricardo's Beer";
+        beerDTO.setBeerName(beerName);
+
+        ResponseEntity<BeerDTO> responseEntity = this.beerController.patchBeer(beer.getId(), beerDTO);
+
+        assertThat(responseEntity.getStatusCode()).isEqualTo(HttpStatusCode.valueOf(204));
+
+        var updateBeer = this.beerRepository.findById(beer.getId()).get();
+        assertThat(updateBeer.getBeerName()).isEqualTo(beerName);
+        assertThat(beer.getCreateDateTime()).isEqualTo(updateBeer.getCreateDateTime());
+        
+    }
+
+
 }

@@ -35,34 +35,42 @@ public class CustomerController {
     private final CustomerService customerService;
 
     @PatchMapping(CUSTOMER_PATH_ID)
-    public ResponseEntity patchExistingCustomer(@PathVariable("customerId") UUID customerId, @RequestBody CustomerDTO customer) {
+    public ResponseEntity<Void> patchExistingCustomer(@PathVariable("customerId") UUID customerId, @RequestBody CustomerDTO customer) {
 
-        customerService.patchExistingCustomer(customerId, customer);
-        return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+        if (customerService.patchExistingCustomer(customerId, customer).isEmpty()) {
+            throw new NotFoundException();
+        }
+        return new ResponseEntity<Void>(HttpStatus.NO_CONTENT);
     }
 
     @DeleteMapping(CUSTOMER_PATH_ID)
-    public ResponseEntity deleteMethodName(@PathVariable("customerId") UUID customerId) {
-        customerService.deleteCustomerById(customerId);
+    public ResponseEntity deleteCustomerById(@PathVariable("customerId") UUID customerId) {
+        
+        if (!customerService.deleteCustomerById(customerId)) {
+            throw new NotFoundException();
+        }
+        
         return new ResponseEntity(HttpStatus.NO_CONTENT);
     }
 
     @PutMapping(CUSTOMER_PATH_ID)
-    public ResponseEntity putMethodName(@PathVariable("customerId") UUID customerId, @RequestBody CustomerDTO customer) {
+    public ResponseEntity<Void> putCustomerById(@PathVariable("customerId") UUID customerId, @RequestBody CustomerDTO customer) {
         
-        customerService.updateExistingCustomer(customerId, customer);
-        return new ResponseEntity(HttpStatus.NO_CONTENT);
+        if (customerService.updateExistingCustomer(customerId, customer).isEmpty()) {
+            throw new NotFoundException();
+        }
+        return new ResponseEntity<Void>(HttpStatus.NO_CONTENT);
     }
     
     @PostMapping(CUSTOMER_PATH)
-    public ResponseEntity createCustomer(@RequestBody CustomerDTO entity) {
+    public ResponseEntity<Void> createCustomer(@RequestBody CustomerDTO entity) {
         
         CustomerDTO customer = customerService.saveNewCustomer(entity);
         
         HttpHeaders headers = new HttpHeaders();
         headers.add("Location", "/api/v1/customer/" + customer.getId().toString());
         
-        return new ResponseEntity<>(headers, HttpStatus.CREATED);
+        return new ResponseEntity<Void>(headers, HttpStatus.CREATED);
     }
     
 

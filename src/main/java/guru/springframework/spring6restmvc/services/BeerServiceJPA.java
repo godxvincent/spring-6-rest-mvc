@@ -8,6 +8,7 @@ import java.util.concurrent.atomic.AtomicReference;
 
 import org.springframework.context.annotation.Primary;
 import org.springframework.stereotype.Service;
+import org.springframework.util.StringUtils;
 
 import guru.springframework.spring6restmvc.mappers.BeerMapper;
 import guru.springframework.spring6restmvc.model.BeerDTO;
@@ -73,7 +74,31 @@ public class BeerServiceJPA implements BeerService
     }
 
     @Override
-    public void patchExistingBeer(UUID beerId, BeerDTO beer) {
+    public Optional<BeerDTO> patchExistingBeer(UUID beerId, BeerDTO beer) {
+        AtomicReference<Optional<BeerDTO>> updatedBeer = new AtomicReference<>(Optional.empty());
 
+        this.beerRepository.findById(beerId).ifPresentOrElse(existing -> {
+
+            if (StringUtils.hasText(beer.getBeerName())) {
+                existing.setBeerName(beer.getBeerName());
+            }
+            if (beer.getBeerStyle() != null) {
+                existing.setBeerStyle(beer.getBeerStyle());
+            }
+            if (beer.getPrice() != null) {
+                existing.setPrice(beer.getPrice());
+            } 
+            if (StringUtils.hasText(beer.getUpc())) {
+                existing.setUpc(beer.getUpc());
+            }
+            if (beer.getQuantityOnHand() != null) {
+                existing.setQuantityOnHand(beer.getQuantityOnHand());
+            }
+            existing.setUpdateDateTime(LocalDateTime.now());
+            updatedBeer.set(Optional.of(this.beerMapper.beerToBeerDTO(this.beerRepository.save(existing))));
+        }, () -> {
+            updatedBeer.set(Optional.empty());
+        });
+        return updatedBeer.get();
     }
 }
