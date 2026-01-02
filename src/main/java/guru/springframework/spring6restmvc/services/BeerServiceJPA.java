@@ -61,8 +61,15 @@ public class BeerServiceJPA implements BeerService
     }
 
     @Override
-    public void deleteBeerById(UUID beerId) {
-
+    public Optional<BeerDTO> deleteBeerById(UUID beerId) {
+        AtomicReference<Optional<BeerDTO>> deletedBeer = new AtomicReference<>(Optional.empty());
+        this.beerRepository.findById(beerId).ifPresentOrElse( (foundBeer) -> {
+            deletedBeer.set(Optional.of(this.beerMapper.beerToBeerDTO(foundBeer)));
+            this.beerRepository.delete(foundBeer);
+        }, () -> {
+            deletedBeer.set(Optional.empty());
+        });
+        return deletedBeer.get();
     }
 
     @Override

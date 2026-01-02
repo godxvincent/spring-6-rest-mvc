@@ -39,11 +39,12 @@ public class BeerControllerIT {
                 .beerName("New Beer")
                 .build();
 
-        ResponseEntity responseEntity = this.beerController.createBeer(beerDto);
+        ResponseEntity<BeerDTO> responseEntity = this.beerController.createBeer(beerDto);
 
         assertThat(responseEntity.getStatusCode()).isEqualTo(HttpStatusCode.valueOf(201));
         assertThat(responseEntity.getHeaders().getLocation()).isNotNull();
-
+        
+        @SuppressWarnings("null")
         String[] locationUUID = responseEntity.getHeaders().getLocation().getPath().split("/");
         UUID savedUUID = UUID.fromString(locationUUID[4]);
 
@@ -56,11 +57,35 @@ public class BeerControllerIT {
 
     }
 
-    // @Test
-    // void testDeleteBeer() {
+    @Test
+    @Rollback
+    @Transactional
+    void testDeleteBeerById() {
 
-    // }
+        var beerToDelete = this.beerRepository.findAll().get(0);
 
+        ResponseEntity responseEntity =  this.beerController.deleteBeer(beerToDelete.getId());
+
+        assertThat(responseEntity.getStatusCode()).isEqualTo(HttpStatusCode.valueOf(204));
+        assertThat(this.beerRepository.findById(beerToDelete.getId()).isEmpty()).isTrue();
+
+    }
+
+    @Test
+    @Rollback
+    @Transactional
+    void testDeleteBeerByIdNotFound() {
+
+        assertThrows(NotFoundException.class, () -> {
+            this.beerController.deleteBeer(UUID.randomUUID());
+
+            // assertThat(responseEntity.getStatusCode()).isEqualTo(HttpStatusCode.valueOf(204));
+            // assertThat(this.beerRepository.findById(beerToDelete.getId()).isEmpty()).isTrue();
+        });
+        
+
+    }
+    
     @Test
     void testGetBeerById() {
         Beer beer = beerRepository.findAll().get(0);
@@ -106,7 +131,7 @@ public class BeerControllerIT {
     }
 
     @Test
-    void testPutBeerException() {
+    void testPutBeerByIdNotFound() {
         assertThrows(NotFoundException.class, ()-> {
             beerController.putBeer(UUID.randomUUID(), BeerDTO.builder().build());
         });
@@ -124,7 +149,7 @@ public class BeerControllerIT {
         final String beerName = "Ricardo's Beer";
         beerDTO.setBeerName(beerName);
 
-        ResponseEntity responseEntity = this.beerController.putBeer(beer.getId(), beerDTO);
+        ResponseEntity<BeerDTO> responseEntity = this.beerController.putBeer(beer.getId(), beerDTO);
 
         assertThat(responseEntity.getStatusCode()).isEqualTo(HttpStatusCode.valueOf(204));
 

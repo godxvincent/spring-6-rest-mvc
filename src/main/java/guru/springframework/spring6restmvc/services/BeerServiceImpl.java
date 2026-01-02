@@ -1,5 +1,6 @@
 package guru.springframework.spring6restmvc.services;
 
+import java.lang.foreign.Linker.Option;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -111,10 +112,8 @@ public class BeerServiceImpl implements BeerService {
     }
 
     @Override
-    public void deleteBeerById(UUID beerId) {
-        beerMap.remove(beerId);
-
-        
+    public Optional<BeerDTO> deleteBeerById(UUID beerId) {
+        return Optional.of(beerMap.remove(beerId));
     }
 
     @Override
