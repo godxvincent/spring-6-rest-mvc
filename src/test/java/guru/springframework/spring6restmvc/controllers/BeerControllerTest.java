@@ -4,7 +4,6 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;
-import org.mockito.internal.matchers.Any;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.http.MediaType;
@@ -124,6 +123,8 @@ public class BeerControllerTest {
     void testUpdateBeer() throws Exception {
         //
         var testBeer = beerServiceImpl.listBeers().get(0);
+
+        given(beerService.updateExistingBeer(any(UUID.class), any(BeerDTO.class))).willReturn(Optional.of(testBeer));
 
         mockMvc.perform(put(BeerController.BEER_PATH_ID,testBeer.getId())
                     .contentType(MediaType.APPLICATION_JSON)

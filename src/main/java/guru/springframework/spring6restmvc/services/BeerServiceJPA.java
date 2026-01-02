@@ -1,8 +1,10 @@
 package guru.springframework.spring6restmvc.services;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
+import java.util.concurrent.atomic.AtomicReference;
 
 import org.springframework.context.annotation.Primary;
 import org.springframework.stereotype.Service;
@@ -34,12 +36,28 @@ public class BeerServiceJPA implements BeerService
 
     @Override
     public BeerDTO saveNewBeer(BeerDTO beer) {
-        return null;
+        var beerToSave = this.beerMapper.beerDtoToBeer(beer);
+        beerToSave.setCreateDateTime(LocalDateTime.now());
+        return this.beerMapper.beerToBeerDTO(this.beerRepository.save(beerToSave));
     }
 
     @Override
-    public void updateExistingBeer(UUID id, BeerDTO entity) {
+    public Optional<BeerDTO> updateExistingBeer(UUID id, BeerDTO entity) {
 
+        AtomicReference<Optional<BeerDTO>> updatedBeer = new AtomicReference<>(Optional.empty());
+
+        this.beerRepository.findById(id).ifPresentOrElse(foundBeer -> {
+            foundBeer.setBeerName(entity.getBeerName());
+            foundBeer.setBeerStyle(entity.getBeerStyle());
+            foundBeer.setPrice(entity.getPrice());
+            foundBeer.setUpc(entity.getUpc());
+            foundBeer.setQuantityOnHand(entity.getQuantityOnHand());
+            foundBeer.setUpdateDateTime(LocalDateTime.now());
+            updatedBeer.set(Optional.of(this.beerMapper.beerToBeerDTO(this.beerRepository.save(foundBeer))));
+        }, () -> {
+            updatedBeer.set(Optional.empty());
+        });
+        return updatedBeer.get();
     }
 
     @Override

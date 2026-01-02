@@ -8,10 +8,14 @@ import java.util.UUID;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.http.HttpStatusCode;
+import org.springframework.http.ResponseEntity;
 import org.springframework.test.annotation.Rollback;
 import org.springframework.transaction.annotation.Transactional;
 
 import guru.springframework.spring6restmvc.entities.Beer;
+import guru.springframework.spring6restmvc.mappers.BeerMapper;
+import guru.springframework.spring6restmvc.model.BeerDTO;
 import guru.springframework.spring6restmvc.repositories.BeerRepository;
 
 @SpringBootTest
@@ -23,10 +27,34 @@ public class BeerControllerIT {
     @Autowired
     private BeerRepository  beerRepository;
 
-    // @Test
-    // void testCreateBeer() {
+    @Autowired
+    private BeerMapper beerMapper;
 
-    // }
+    // As we are affecting the DB is better to add this.
+    @Rollback
+    @Transactional
+    @Test
+    void testCreateBeer() {
+        BeerDTO beerDto = BeerDTO.builder()
+                .beerName("New Beer")
+                .build();
+
+        ResponseEntity responseEntity = this.beerController.createBeer(beerDto);
+
+        assertThat(responseEntity.getStatusCode()).isEqualTo(HttpStatusCode.valueOf(201));
+        assertThat(responseEntity.getHeaders().getLocation()).isNotNull();
+
+        String[] locationUUID = responseEntity.getHeaders().getLocation().getPath().split("/");
+        UUID savedUUID = UUID.fromString(locationUUID[4]);
+
+        Beer beer = beerRepository.findById(savedUUID).get();
+        assertThat(beer).isNotNull();
+        assertThat(beer.getBeerName()).isEqualTo(beerDto.getBeerName());
+        assertThat(beer.getCreateDateTime()).isNotNull();
+        assertThat(beer.getUpdateDateTime()).isNull();
+
+
+    }
 
     // @Test
     // void testDeleteBeer() {
@@ -70,13 +98,41 @@ public class BeerControllerIT {
         assertThat(totalBeers).isEqualTo(0);
     }
 
-    // @Test
-    // void testPatchBeer() {
+    @Test
+    @Rollback
+    @Transactional
+    void testPatchBeer() {
+       
+    }
 
-    // }
+    @Test
+    void testPutBeerException() {
+        assertThrows(NotFoundException.class, ()-> {
+            beerController.putBeer(UUID.randomUUID(), BeerDTO.builder().build());
+        });
+    }
 
-    // @Test
-    // void testPutBeer() {
+    @Transactional
+    @Rollback
+    @Test
+    void testPutBeer() {
+        Beer beer = this.beerRepository.findAll().get(0);
+        BeerDTO beerDTO = this.beerMapper.beerToBeerDTO(beer);
+        beerDTO.setId(null);
+        beerDTO.setVersion(null);
 
-    // }
+        final String beerName = "Ricardo's Beer";
+        beerDTO.setBeerName(beerName);
+
+        ResponseEntity responseEntity = this.beerController.putBeer(beer.getId(), beerDTO);
+
+        assertThat(responseEntity.getStatusCode()).isEqualTo(HttpStatusCode.valueOf(204));
+
+        var updateBeer = this.beerRepository.findById(beer.getId()).get();
+        assertThat(updateBeer.getBeerName()).isEqualTo(beerName);
+        assertThat(beer.getCreateDateTime()).isEqualTo(updateBeer.getCreateDateTime());
+        // assertThat(beer.getUpdateDateTime()).isNotEqualTo(updateBeer.getUpdateDateTime()); // this fails bc there's an internal reference to the same date that is shared.
+        // assertThat(beer.getVersion()).isNotEqualTo(updateBeer.getVersion());
+        
+    }
 }
