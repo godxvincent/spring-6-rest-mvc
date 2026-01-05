@@ -1,17 +1,34 @@
 package guru.springframework.spring6restmvc.controllers;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.verify;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.patch;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Optional;
 import java.util.UUID;
 
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.HttpStatusCode;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.test.annotation.Rollback;
+import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.MockMvcBuilder;
+import org.springframework.test.web.servlet.MvcResult;
+import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.context.WebApplicationContext;
+
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 import guru.springframework.spring6restmvc.entities.Beer;
 import guru.springframework.spring6restmvc.mappers.BeerMapper;
@@ -29,6 +46,48 @@ public class BeerControllerIT {
 
     @Autowired
     private BeerMapper beerMapper;
+
+
+    @Autowired
+    WebApplicationContext wac;
+
+    @Autowired
+    ObjectMapper objectMapper;
+
+    MockMvc mockMvc;
+
+    @BeforeEach
+    void setUp() {
+        mockMvc = MockMvcBuilders.webAppContextSetup(wac).build();
+    }
+
+
+    @Test
+    void testPatchBeerTooLongBeerName() throws Exception {
+        var testBeer = this.beerRepository.findAll().get(0);
+
+        Map<String, Object> beerMap = new HashMap<>();
+        beerMap.put("beerName", "New Name 12345678901234567890123456789012345678901234567890");
+
+        // given(beerService.patchExistingBeer(any(UUID.class), any(BeerDTO.class))).willReturn(Optional.of(testBeer));
+
+
+        MvcResult mvcResult= mockMvc.perform(patch(BeerController.BEER_PATH_ID, testBeer.getId())
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(beerMap))
+                .accept(MediaType.APPLICATION_JSON))
+            .andExpect(status().isBadRequest()).andReturn();
+
+        System.out.println(mvcResult.getResponse().getContentAsString());
+
+        // verify(beerService).patchExistingBeer(uuidArgumentCaptor.capture(), beerArgumentCaptor.capture());
+
+        // assertThat(testBeer.getId()).isEqualTo(uuidArgumentCaptor.getValue());
+        // assertThat(beerMap.get("beerName")).isEqualTo(beerArgumentCaptor.getValue().getBeerName());
+        // assertNull(beerArgumentCaptor.getValue().getPrice());
+
+    }
+
 
     // As we are affecting the DB is better to add this.
     @Rollback
@@ -78,9 +137,6 @@ public class BeerControllerIT {
 
         assertThrows(NotFoundException.class, () -> {
             this.beerController.deleteBeer(UUID.randomUUID());
-
-            // assertThat(responseEntity.getStatusCode()).isEqualTo(HttpStatusCode.valueOf(204));
-            // assertThat(this.beerRepository.findById(beerToDelete.getId()).isEmpty()).isTrue();
         });
         
 

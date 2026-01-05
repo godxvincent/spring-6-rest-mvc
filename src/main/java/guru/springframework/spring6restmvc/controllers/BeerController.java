@@ -6,6 +6,7 @@ import java.util.UUID;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.DeleteMapping;
 // import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.PatchMapping;
@@ -14,6 +15,9 @@ import org.springframework.web.bind.annotation.RestController;
 
 import guru.springframework.spring6restmvc.model.BeerDTO;
 import guru.springframework.spring6restmvc.services.BeerService;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotEmpty;
+import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -56,7 +60,7 @@ public class BeerController {
     }
 
     @PutMapping(BEER_PATH_ID)
-    public ResponseEntity<BeerDTO> putBeer(@PathVariable("beerId") UUID id, @RequestBody BeerDTO entity) {
+    public ResponseEntity<BeerDTO> putBeer(@PathVariable("beerId") UUID id, @Validated @RequestBody BeerDTO entity) {
         
         if (beerService.updateExistingBeer(id, entity).isEmpty()) {
             throw new NotFoundException();
@@ -64,8 +68,9 @@ public class BeerController {
         return new ResponseEntity<BeerDTO>(HttpStatus.NO_CONTENT);
     }
 
+    // @validated forces the service to apply and validate the DTO follows any validation before the call.
     @PostMapping(BEER_PATH)
-    public ResponseEntity<BeerDTO> createBeer(@RequestBody BeerDTO beer){
+    public ResponseEntity<BeerDTO> createBeer(@Validated @RequestBody BeerDTO beer){
         BeerDTO savedBeer = beerService.saveNewBeer(beer);
 
         HttpHeaders headers = new HttpHeaders();

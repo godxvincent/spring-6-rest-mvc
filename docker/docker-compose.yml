@@ -1,0 +1,17 @@
+services:
+  db:
+    image: mysql:8.0.41
+    container_name: mysql_db
+    restart: always
+    ports:
+      - "3306:3306"
+    environment:
+      MYSQL_ROOT_PASSWORD: my_root_password
+      MYSQL_DATABASE: spring6restmvc
+      MYSQL_USER: user
+      MYSQL_PASSWORD: password
+    volumes:
+      - db_data:/var/lib/mysql
+
+volumes:
+  db_data:

@@ -9,6 +9,7 @@ import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.MvcResult;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 
@@ -26,6 +27,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
+import java.net.http.HttpResponse.ResponseInfo;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
@@ -37,6 +39,7 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyNoInteractions;
 import static org.assertj.core.api.Assertions.assertThat;
 
 
@@ -138,7 +141,26 @@ public class BeerControllerTest {
                .andExpect(status().isNoContent());
 
         verify(beerService).updateExistingBeer(eq(testBeer.getId()), eq(testBeer));
+    }
+    
+    @Test
+    void testUpdateBeerNameWithNull() throws Exception {
+        //
+        var testBeer = beerServiceImpl.listBeers().get(0);
+        testBeer.setBeerName(null);
 
+        given(beerService.updateExistingBeer(any(UUID.class), any(BeerDTO.class))).willReturn(Optional.of(testBeer));
+
+        MvcResult mvcresult = mockMvc.perform(put(BeerController.BEER_PATH_ID,testBeer.getId())
+                    .contentType(MediaType.APPLICATION_JSON)
+                    .accept(MediaType.APPLICATION_JSON)
+                    .content(objectMapper.writeValueAsString(testBeer)))
+               .andExpect(status().isBadRequest())
+               .andExpect(jsonPath("$.length()", is(2))).andReturn();
+
+        System.out.println(mvcresult.getResponse().getContentAsString());
+        // verify(beerService).updateExistingBeer(eq(testBeer.getId()), eq(testBeer));
+        verifyNoInteractions(beerService);
     }
 
     @Test
@@ -156,6 +178,21 @@ public class BeerControllerTest {
                     .content(objectMapper.writeValueAsString(testBeer)))
                .andExpect(status().isCreated())
                .andExpect(header().exists("Location"));
+    }
+
+    @Test
+    void testCreateNewBeerWithNullBeerName() throws Exception {
+        var testBeer = BeerDTO.builder().build();
+
+        given(beerService.saveNewBeer(any(BeerDTO.class))).willReturn(beerServiceImpl.listBeers().get(1));
+
+        MvcResult mvcresult = mockMvc.perform(post(BeerController.BEER_PATH)
+                    .contentType(MediaType.APPLICATION_JSON)
+                    .content(objectMapper.writeValueAsString(testBeer)))
+               .andExpect(status().isBadRequest())
+               .andExpect(jsonPath("$.length()", is(6))).andReturn();
+
+        System.out.println(mvcresult.getResponse().getContentAsString());
     }
 
 
