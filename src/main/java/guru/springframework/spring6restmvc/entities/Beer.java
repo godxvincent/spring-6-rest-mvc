@@ -4,7 +4,9 @@ import java.time.LocalDateTime;
 import java.util.UUID;
 
 import org.hibernate.annotations.GenericGenerator;
+import org.hibernate.annotations.JdbcTypeCode;
 import org.hibernate.annotations.UuidGenerator;
+import org.hibernate.type.SqlTypes;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -36,7 +38,10 @@ public class Beer {
     @GeneratedValue(generator = "UUID")
     // @GenericGenerator(name = "UUID", strategy = "org.hibernate.id.UUIDGenerator") // Deprecated, instead use UuidGenerator
     @UuidGenerator
-    @Column(length = 36, columnDefinition = "varchar", updatable = false, nullable = false)
+    // Cambiamos columnDefinition = "varchar" por columnDefinition = "varchar(36)" ya que hibernate estaba usando ese valor para crear la columna en mysql lo cual no es soportado.
+    @Column(length = 36, columnDefinition = "varchar(36)", updatable = false, nullable = false)
+    // Añadimos esto ya que hibernate esta tratando de salvar una columna binaria en un string
+    @JdbcTypeCode(SqlTypes.CHAR)
     private UUID id;
     @Version
     private Integer version;
