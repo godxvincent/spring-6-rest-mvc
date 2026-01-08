@@ -1,6 +1,5 @@
 package guru.springframework.spring6restmvc.services;
 
-import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
@@ -38,7 +37,6 @@ public class BeerServiceJPA implements BeerService
     @Override
     public BeerDTO saveNewBeer(BeerDTO beer) {
         var beerToSave = this.beerMapper.beerDtoToBeer(beer);
-        beerToSave.setCreateDateTime(LocalDateTime.now());
         return this.beerMapper.beerToBeerDTO(this.beerRepository.save(beerToSave));
     }
 
@@ -53,7 +51,6 @@ public class BeerServiceJPA implements BeerService
             foundBeer.setPrice(entity.getPrice());
             foundBeer.setUpc(entity.getUpc());
             foundBeer.setQuantityOnHand(entity.getQuantityOnHand());
-            foundBeer.setUpdateDateTime(LocalDateTime.now());
             updatedBeer.set(Optional.of(this.beerMapper.beerToBeerDTO(this.beerRepository.save(foundBeer))));
         }, () -> {
             updatedBeer.set(Optional.empty());
@@ -94,7 +91,6 @@ public class BeerServiceJPA implements BeerService
             if (beer.getQuantityOnHand() != null) {
                 existing.setQuantityOnHand(beer.getQuantityOnHand());
             }
-            existing.setUpdateDateTime(LocalDateTime.now());
             updatedBeer.set(Optional.of(this.beerMapper.beerToBeerDTO(this.beerRepository.save(existing))));
         }, () -> {
             updatedBeer.set(Optional.empty());

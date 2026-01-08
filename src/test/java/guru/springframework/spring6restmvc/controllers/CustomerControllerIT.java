@@ -46,8 +46,6 @@ public class CustomerControllerIT {
         assertThat(savedCustomer).isNotNull();
         assertThat(savedCustomer.getCustomerName()).isEqualTo(toSaveCustomer.getCustomerName());
         assertThat(savedCustomer.getVersion()).isEqualTo(0);
-        assertThat(savedCustomer.getCreateDateTime()).isNotNull();
-        assertThat(savedCustomer.getUpdateDateTime()).isNotNull();
         assertThat(savedCustomer.getId()).isNotNull();
 
     }

@@ -38,8 +38,6 @@ public class CustomerServiceJPA implements CustomerService{
     @Override
     public CustomerDTO saveNewCustomer(CustomerDTO entity) {
         Customer newCustomer = this.customerMapper.customerDTOToCustomer(entity);
-        newCustomer.setCreateDateTime(LocalDateTime.now());
-        newCustomer.setUpdateDateTime(LocalDateTime.now());
         return this.customerMapper.customerToCustomerDTO(this.customerRepository.save(newCustomer));
         
     }
@@ -51,7 +49,6 @@ public class CustomerServiceJPA implements CustomerService{
 
         this.customerRepository.findById(customerId).ifPresentOrElse(foundCustomer -> {
             foundCustomer.setCustomerName(customer.getCustomerName());
-            foundCustomer.setUpdateDateTime(LocalDateTime.now());
             updatedCustomer.set(Optional.of(this.customerMapper.customerToCustomerDTO(this.customerRepository.save(foundCustomer))));
         }, () -> {
             updatedCustomer.set(Optional.empty());
@@ -78,7 +75,6 @@ public class CustomerServiceJPA implements CustomerService{
 
             if (StringUtils.hasText(customer.getCustomerName()) && !customer.getCustomerName().equals(foundCustomer.getCustomerName())) {
                 foundCustomer.setCustomerName(customer.getCustomerName());
-                foundCustomer.setUpdateDateTime(LocalDateTime.now());
                 updatedCustomer.set(Optional.of(this.customerMapper.customerToCustomerDTO(this.customerRepository.save(foundCustomer))));
             } else {
                 updatedCustomer.set(Optional.empty());

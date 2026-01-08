@@ -38,6 +38,7 @@ public class BootstrapData implements CommandLineRunner {
         
         System.out.println("Loading some data into the database");
         loadBeerData();
+        loadCsvData();
         loadCustomerData();
         System.out.println("Stop loading some data into the database");
     }
