@@ -1,5 +1,6 @@
 package guru.springframework.spring6restmvc.services;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
@@ -9,6 +10,7 @@ import org.springframework.context.annotation.Primary;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 
+import guru.springframework.spring6restmvc.entities.Beer;
 import guru.springframework.spring6restmvc.mappers.BeerMapper;
 import guru.springframework.spring6restmvc.model.BeerDTO;
 import guru.springframework.spring6restmvc.repositories.BeerRepository;
@@ -25,8 +27,20 @@ public class BeerServiceJPA implements BeerService
 
 
     @Override
-    public List<BeerDTO> listBeers() {
-        return this.beerRepository.findAll().stream().map(beerMapper::beerToBeerDTO).toList();
+    public List<BeerDTO> listBeers(String beerName) {
+
+        List<Beer> beerList;
+
+        if (StringUtils.hasText(beerName)) {
+            beerList = findBeersByName(beerName);
+        } else {
+            beerList = this.beerRepository.findAll();
+        }
+        return beerList.stream().map(beerMapper::beerToBeerDTO).toList();
+    }
+
+    private List<Beer> findBeersByName(String beerName) {
+        return this.beerRepository.findAllByBeerNameLikeIgnoreCase("%" + beerName + "%");
     }
 
     @Override

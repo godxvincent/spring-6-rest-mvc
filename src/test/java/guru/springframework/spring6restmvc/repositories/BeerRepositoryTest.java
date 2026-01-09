@@ -5,21 +5,31 @@ import java.math.BigDecimal;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
+import org.springframework.context.annotation.Import;
 
+import guru.springframework.spring6restmvc.bootstrap.BootstrapData;
 import guru.springframework.spring6restmvc.entities.Beer;
 import guru.springframework.spring6restmvc.model.BeerStyle;
+import guru.springframework.spring6restmvc.services.BeerCSVServiceImpl;
 import jakarta.validation.ConstraintViolationException;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
 @DataJpaTest
+@Import({BootstrapData.class, BeerCSVServiceImpl.class})
 public class BeerRepositoryTest {
 
     
     @Autowired
     BeerRepository beerRepository;
 
+
+    @Test
+    void testFindAllBeersByName() {
+        var beerList = beerRepository.findAllByBeerNameLikeIgnoreCase("%IPA%");
+        assertThat(beerList.size()).isEqualTo(336);
+    }
 
     @Test
     void testSaveBeer() {
