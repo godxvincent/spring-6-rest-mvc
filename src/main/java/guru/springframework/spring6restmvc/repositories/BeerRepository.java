@@ -12,6 +12,7 @@ public interface BeerRepository extends JpaRepository<Beer, UUID>{
     // https://docs.spring.io/spring-data/jpa/reference/jpa/query-methods.html
     List<Beer> findAllByBeerNameLikeIgnoreCase(String beerName);
     List<Beer> findAllByBeerStyle(BeerStyle beerStyle);
+    List<Beer> findAllByBeerNameLikeIgnoreCaseAndBeerStyle(String beerName, BeerStyle beerStyle);
 
 
 }

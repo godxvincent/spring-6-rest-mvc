@@ -28,18 +28,31 @@ public class BeerServiceJPA implements BeerService
 
 
     @Override
-    public List<BeerDTO> listBeers(String beerName, BeerStyle beerStyle) {
+    public List<BeerDTO> listBeers(String beerName, BeerStyle beerStyle, Boolean showInventory) {
 
         List<Beer> beerList;
 
         if (StringUtils.hasText(beerName) && beerStyle == null) {
             beerList = findBeersByName(beerName);
-        } else if (beerStyle != null) {
+        } else if (!StringUtils.hasText(beerName) && beerStyle != null) {
             beerList = findBeersByBeerStyle(beerStyle);
+        } else if (StringUtils.hasText(beerName) && beerStyle != null) {
+            beerList = findBeersByBeerNameAndBeerStyle(beerName, beerStyle);
         } else {
             beerList = this.beerRepository.findAll();
         }
+
+        beerList.forEach(beer -> {
+            if (showInventory != null && !showInventory)
+            {
+                beer.setQuantityOnHand(null) ;
+            }
+        });
         return beerList.stream().map(beerMapper::beerToBeerDTO).toList();
+    }
+
+    private List<Beer> findBeersByBeerNameAndBeerStyle(String beerName, BeerStyle beerStyle) {
+        return this.beerRepository.findAllByBeerNameLikeIgnoreCaseAndBeerStyle("%"+beerName+"%", beerStyle);
     }
 
     private List<Beer> findBeersByName(String beerName) {
