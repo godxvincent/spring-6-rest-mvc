@@ -31,6 +31,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import guru.springframework.spring6restmvc.entities.Beer;
 import guru.springframework.spring6restmvc.mappers.BeerMapper;
 import guru.springframework.spring6restmvc.model.BeerDTO;
+import guru.springframework.spring6restmvc.model.BeerStyle;
 import guru.springframework.spring6restmvc.repositories.BeerRepository;
 
 @SpringBootTest
@@ -65,6 +66,15 @@ public class BeerControllerIT {
                         .queryParam("beerName", "IPA"))
                         .andExpect(status().isOk())
                         .andExpect(jsonPath("$.size()", is(336)));
+    }
+
+
+    @Test
+    void testListBeersByBeerStyle() throws Exception {
+        mockMvc.perform(get(BeerController.BEER_PATH)
+                        .queryParam("beerStyle", BeerStyle.ALE.name()))
+                        .andExpect(status().isOk())
+                        .andExpect(jsonPath("$.size()", is(400)));
     }
 
 
@@ -169,7 +179,7 @@ public class BeerControllerIT {
 
     @Test
     void testListBeers() {
-        var totalBeers = beerController.listBeers(null).size();
+        var totalBeers = beerController.listBeers(null, null).size();
         assertThat(totalBeers).isEqualTo(2413);
     }
 
@@ -181,7 +191,7 @@ public class BeerControllerIT {
     @Test
     void testEmptyBeers() {
         beerRepository.deleteAll();
-        var totalBeers = beerController.listBeers(null).size();
+        var totalBeers = beerController.listBeers(null, null).size();
         assertThat(totalBeers).isEqualTo(0);
     }
 

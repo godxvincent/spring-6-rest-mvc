@@ -30,6 +30,12 @@ public class BeerRepositoryTest {
         var beerList = beerRepository.findAllByBeerNameLikeIgnoreCase("%IPA%");
         assertThat(beerList.size()).isEqualTo(336);
     }
+    
+    @Test
+    void testFindAllBeersByBeerStyle() {
+        var beerList = beerRepository.findAllByBeerStyle(BeerStyle.ALE);
+        assertThat(beerList.size()).isEqualTo(400);
+    }
 
     @Test
     void testSaveBeer() {
