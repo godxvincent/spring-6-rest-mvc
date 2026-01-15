@@ -27,14 +27,14 @@ public class BeerRepositoryTest {
 
     @Test
     void testFindAllBeersByName() {
-        var beerList = beerRepository.findAllByBeerNameLikeIgnoreCase("%IPA%");
-        assertThat(beerList.size()).isEqualTo(336);
+        var beerList = beerRepository.findAllByBeerNameLikeIgnoreCase("%IPA%", null);
+        assertThat(beerList.getContent().size()).isEqualTo(336);
     }
     
     @Test
     void testFindAllBeersByBeerStyle() {
-        var beerList = beerRepository.findAllByBeerStyle(BeerStyle.ALE);
-        assertThat(beerList.size()).isEqualTo(400);
+        var beerList = beerRepository.findAllByBeerStyle(BeerStyle.ALE, null);
+        assertThat(beerList.getContent().size()).isEqualTo(400);
     }
 
     @Test

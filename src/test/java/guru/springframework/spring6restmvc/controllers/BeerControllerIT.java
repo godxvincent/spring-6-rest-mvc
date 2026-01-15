@@ -61,15 +61,30 @@ public class BeerControllerIT {
         mockMvc = MockMvcBuilders.webAppContextSetup(wac).build();
     }
 
+
+    @Test
+    void tesListBeersByStyleAndNameShowInventoryTruePage1() throws Exception {
+        mockMvc.perform(get(BeerController.BEER_PATH)
+                        .queryParam("beerName", "IPA")
+                        .queryParam("beerStyle", BeerStyle.IPA.name())
+                        .queryParam("showInventory", "true")
+                        .queryParam("pageNumber", "2")
+                        .queryParam("pageSize", "50"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.content.size()", is(50)))
+                .andExpect(jsonPath("$.content.[0].quantityOnHand").value(IsNull.notNullValue()));
+    }
+
     @Test
     void tesListBeersByStyleAndNameShowInventoryTrue() throws Exception {
         mockMvc.perform(get(BeerController.BEER_PATH)
                         .queryParam("beerName", "IPA")
                         .queryParam("beerStyle", BeerStyle.IPA.name())
-                        .queryParam("showInventory", "true"))
+                        .queryParam("showInventory", "true")
+                        .queryParam("pageSize", "1000"))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.size()", is(310)))
-                .andExpect(jsonPath("$.[0].quantityOnHand").value(IsNull.notNullValue()));
+                .andExpect(jsonPath("$.content.size()", is(310)))
+                .andExpect(jsonPath("$.content.[0].quantityOnHand").value(IsNull.notNullValue()));
     }
 
     @Test
@@ -77,37 +92,41 @@ public class BeerControllerIT {
         mockMvc.perform(get(BeerController.BEER_PATH)
                         .queryParam("beerName", "IPA")
                         .queryParam("beerStyle", BeerStyle.IPA.name())
-                        .queryParam("showInventory", "false"))
+                        .queryParam("showInventory", "false")
+                        .queryParam("pageSize", "1000"))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.size()", is(310)))
-                .andExpect(jsonPath("$.[0].quantityOnHand").value(IsNull.nullValue()));
+                .andExpect(jsonPath("$.content.size()", is(310)))
+                .andExpect(jsonPath("$.content.[0].quantityOnHand").value(IsNull.nullValue()));
     }
 
     @Test
     void tesListBeersByStyleAndName() throws Exception {
         mockMvc.perform(get(BeerController.BEER_PATH)
                         .queryParam("beerName", "IPA")
-                        .queryParam("beerStyle", BeerStyle.IPA.name()))
+                        .queryParam("beerStyle", BeerStyle.IPA.name())
+                        .queryParam("pageSize", "1000"))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.size()", is(310)));
+                .andExpect(jsonPath("$.content.size()", is(310)));
     }
 
 
     @Test
     void testListBeersByName() throws Exception {
         mockMvc.perform(get(BeerController.BEER_PATH)
-                        .queryParam("beerName", "IPA"))
+                        .queryParam("beerName", "IPA")
+                        .queryParam("pageSize", "1000"))
                         .andExpect(status().isOk())
-                        .andExpect(jsonPath("$.size()", is(336)));
+                        .andExpect(jsonPath("$.content.size()", is(336)));
     }
 
 
     @Test
     void testListBeersByBeerStyle() throws Exception {
         mockMvc.perform(get(BeerController.BEER_PATH)
-                        .queryParam("beerStyle", BeerStyle.ALE.name()))
+                        .queryParam("beerStyle", BeerStyle.ALE.name())
+                        .queryParam("pageSize", "1000"))
                         .andExpect(status().isOk())
-                        .andExpect(jsonPath("$.size()", is(400)));
+                        .andExpect(jsonPath("$.content.size()", is(400)));
     }
 
 
@@ -212,8 +231,8 @@ public class BeerControllerIT {
 
     @Test
     void testListBeers() {
-        var totalBeers = beerController.listBeers(null, null, false).size();
-        assertThat(totalBeers).isEqualTo(2413);
+        var totalBeers = beerController.listBeers(null, null, false, 1, 2000).getContent().size();
+        assertThat(totalBeers).isEqualTo(1000);
     }
 
     // The way we are simulating the db is empty is deleting the records that were loaded by the bootstrap file.
@@ -224,7 +243,7 @@ public class BeerControllerIT {
     @Test
     void testEmptyBeers() {
         beerRepository.deleteAll();
-        var totalBeers = beerController.listBeers(null, null, false).size();
+        var totalBeers = beerController.listBeers(null, null, false, 1, 1).getContent().size();
         assertThat(totalBeers).isEqualTo(0);
     }
 
