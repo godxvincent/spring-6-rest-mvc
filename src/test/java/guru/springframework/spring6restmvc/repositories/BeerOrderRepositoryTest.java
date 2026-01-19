@@ -8,6 +8,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 
 import guru.springframework.spring6restmvc.entities.Beer;
 import guru.springframework.spring6restmvc.entities.BeerOrder;
+import guru.springframework.spring6restmvc.entities.BeerOrderShipment;
 import guru.springframework.spring6restmvc.entities.Customer;
 import jakarta.transaction.Transactional;
 
@@ -44,6 +45,7 @@ public class BeerOrderRepositoryTest {
         BeerOrder beerOrder = BeerOrder.builder()
                         .customerRef("Test of reference")
                         .beerOrderLines(null)
+                        .beerOrderShipment(BeerOrderShipment.builder().trackingNumber("test1234").build())
                         .customer(testCustomer).build();
         // If we use flush we force hibernate to save all immediately causing performance issues.
         // BeerOrder savedBeerOrder = beerOrderRepository.saveAndFlush(beerOrder);
