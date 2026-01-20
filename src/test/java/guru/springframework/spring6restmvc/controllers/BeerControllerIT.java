@@ -5,6 +5,7 @@ import static org.hamcrest.core.Is.is;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.patch;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -14,6 +15,7 @@ import java.util.UUID;
 
 import org.hamcrest.core.IsNull;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -59,6 +61,34 @@ public class BeerControllerIT {
     @BeforeEach
     void setUp() {
         mockMvc = MockMvcBuilders.webAppContextSetup(wac).build();
+    }
+
+    @Disabled // just for demo purposes
+    @Test
+    void testUpdateBeerBadVersion() throws Exception {
+        Beer beer = beerRepository.findAll().get(0);
+
+        BeerDTO beerDTO = beerMapper.beerToBeerDTO(beer);
+
+        beerDTO.setBeerName("Updated Name");
+
+        MvcResult result = mockMvc.perform(put(BeerController.BEER_PATH_ID, beer.getId())
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .accept(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(beerDTO)))
+                .andExpect(status().isNoContent())
+                .andReturn();
+
+        System.out.println(result.getResponse().getContentAsString());
+
+        MvcResult result2 = mockMvc.perform(put(BeerController.BEER_PATH_ID, beer.getId())
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .accept(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(beerDTO)))
+                .andExpect(status().isNoContent())
+                .andReturn();
+
+        System.out.println(result2.getResponse().getStatus());
     }
 
 
